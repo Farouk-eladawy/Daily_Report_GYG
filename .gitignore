@@ -1,0 +1,7 @@
+node_modules/
+.env.local
+.env
+gyg_session.json
+debug_*.json
+debug_*.png
+test_capture.png

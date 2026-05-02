@@ -1,0 +1,44 @@
+name: GYG Airtable Sync Loop
+
+on:
+  # التشغيل المجدول: هنا مضبوط ليعمل كل ساعة (يمكنك تعديله)
+  schedule:
+    - cron: '0 * * * *'
+  
+  # يتيح لك تشغيل السكربت يدوياً من واجهة GitHub
+  workflow_dispatch:
+
+jobs:
+  sync-data:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node.js dependencies
+        run: npm install playwright otplib puppeteer-extra-plugin-stealth
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Run GYG Scraper (Playwright)
+        env:
+          GYG_EMAIL: ${{ secrets.GYG_EMAIL }}
+          GYG_PASSWORD: ${{ secrets.GYG_PASSWORD }}
+          GYG_2FA_SECRET: ${{ secrets.GYG_2FA_SECRET }}
+          # يجب أن يكون true لأن GitHub Actions لا يمتلك شاشة مرئية
+          BROWSER_HEADLESS: true
+        run: node scrape_gyg.js
+
+      - name: Run Airtable Sync (PowerShell)
+        env:
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          GYG_AIRTABLE_TABLE_NAME: ${{ secrets.GYG_AIRTABLE_TABLE_NAME }}
+        run: pwsh ./GygAirtableSync.ps1
