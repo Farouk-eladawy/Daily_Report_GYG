@@ -34,7 +34,7 @@ jobs:
           GYG_2FA_SECRET: ${{ secrets.GYG_2FA_SECRET }}
           # يجب أن يكون true لأن GitHub Actions لا يمتلك شاشة مرئية
           BROWSER_HEADLESS: true
-        run: node scrape_gyg.js
+        run: node scrape_gyg.js "${{ secrets.GYG_EMAIL }}" "${{ secrets.GYG_PASSWORD }}" "${{ secrets.GYG_2FA_SECRET }}"
 
       - name: Run Airtable Sync (PowerShell)
         env:
