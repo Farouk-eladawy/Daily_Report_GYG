@@ -41,4 +41,5 @@ jobs:
           AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
           AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
           GYG_AIRTABLE_TABLE_NAME: ${{ secrets.GYG_AIRTABLE_TABLE_NAME }}
+          GYG_SKIP_SCRAPE: 'true'
         run: pwsh ./GygAirtableSync.ps1
