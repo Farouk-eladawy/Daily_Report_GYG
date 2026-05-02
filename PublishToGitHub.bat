@@ -18,6 +18,10 @@ if not exist ".git" (
 :: Ensure origin is correct
 git remote set-url origin %REPO_URL%
 
+:: Configure local git user if not set globally
+git config user.email "eladawy522@gmail.com"
+git config user.name "Farouk-eladawy"
+
 :: Add all changes
 git add .
 
