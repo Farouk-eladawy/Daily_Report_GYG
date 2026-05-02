@@ -3,11 +3,29 @@ $ErrorActionPreference = 'Stop'
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ConfigFile = Join-Path $ScriptDir 'config.json'
 
-if (-not (Test-Path $ConfigFile)) {
-    throw "Configuration file not found at $ConfigFile"
+if (Test-Path $ConfigFile) {
+    $Config = Get-Content $ConfigFile -Raw | ConvertFrom-Json
+} else {
+    if ([string]::IsNullOrWhiteSpace($env:AIRTABLE_API_KEY)) {
+        throw "Configuration file not found at $ConfigFile and AIRTABLE_API_KEY environment variable is not set."
+    }
+    
+    $Config = [PSCustomObject]@{
+        Airtable = [PSCustomObject]@{
+            ApiKey = $env:AIRTABLE_API_KEY
+            BaseId = $env:AIRTABLE_BASE_ID
+            GygAnalyticsTable = $env:GYG_AIRTABLE_TABLE_NAME
+        }
+        GYG = [PSCustomObject]@{
+            Email = $env:GYG_EMAIL
+            Password = $env:GYG_PASSWORD
+            Secret = $env:GYG_2FA_SECRET
+        }
+        Logging = [PSCustomObject]@{
+            Path = 'Logs'
+        }
+    }
 }
-
-$Config = Get-Content $ConfigFile -Raw | ConvertFrom-Json
 
 $loggingPath = $null
 if ($Config.Logging -and ($Config.Logging.PSObject.Properties.Name -contains 'Path')) {
